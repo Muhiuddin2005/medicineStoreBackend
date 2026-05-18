@@ -4,12 +4,15 @@ import paginationSortingHelper from "../../helpers/paginationSortingHelper.js";
 
 const getAllMedicines = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { search, category } = req.query;
+        const { search, category, manufacturer, minPrice, maxPrice } = req.query;
         const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
 
         const result = await medicineService.getAllMedicines({
-            search: search as string,
-            category: category as string,
+            search: search ? (search as string).trim() : undefined,
+            category: category ? (category as string).trim() : undefined,
+            manufacturer: manufacturer ? (manufacturer as string).trim() : undefined,
+            minPrice: minPrice ? Number(minPrice) : undefined,
+            maxPrice: maxPrice ? Number(maxPrice) : undefined,
             page,
             limit,
             skip,
