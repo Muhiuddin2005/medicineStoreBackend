@@ -46,7 +46,16 @@ const getAllMedicines = async (page: number, limit: number) => {
 const getAllOrders = async (page: number, limit: number) => {
     const skip = (page - 1) * limit;
     const total = await prisma.order.count();
-    const orders = await prisma.order.findMany({ skip, take: limit, include: { items: true } });
+    const orders = await prisma.order.findMany({ 
+        skip, 
+        take: limit, 
+        include: { 
+            customer: {
+                select: { name: true }
+            },
+            items: true 
+        } 
+    });
     return { data: orders, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
 };
 
