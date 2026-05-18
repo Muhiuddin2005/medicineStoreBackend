@@ -3,7 +3,12 @@ import { sellerService } from "./seller.service.js";
 
 const addMedicine = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await sellerService.addMedicine(Number(req.user!.id), req.body);
+        const payload = { ...req.body };
+        if (req.file) {
+            payload.imageUrl = req.file.path;
+        }
+        
+        const result = await sellerService.addMedicine(Number(req.user!.id), payload);
         res.status(201).json({ success: true, message: "Medicine added successfully", data: result });
     } catch (error) {
         next(error);
@@ -46,10 +51,20 @@ const updateOrderStatus = async (req: Request, res: Response, next: NextFunction
     }
 };
 
+const getSellerMedicines = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await sellerService.getSellerMedicines(Number(req.user!.id));
+        res.status(200).json({ success: true, message: "Medicines retrieved", data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const SellerController = {
     addMedicine,
     updateMedicine,
     removeMedicine,
     getSellerOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    getSellerMedicines
 };
