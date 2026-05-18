@@ -9,5 +9,6 @@ const orderRouter = Router();
 orderRouter.post('/', auth('CUSTOMER'), validateRequest(orderValidation.createOrderSchema), OrderController.createOrder);
 orderRouter.get('/', auth('CUSTOMER'), OrderController.getCustomerOrders);
 orderRouter.get('/:id', auth('CUSTOMER'), OrderController.getOrderById);
+orderRouter.patch('/:id/cancel', auth('CUSTOMER'), OrderController.cancelOrder);
 
 export default orderRouter;

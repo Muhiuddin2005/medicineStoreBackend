@@ -3,7 +3,8 @@ import { orderService } from "./order.service.js";
 
 const createOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await orderService.createOrder(Number(req.user!.id), req.body);
+        const { items, totalPrice, shippingAddress } = req.body;
+        const result = await orderService.createOrder(Number(req.user?.id), { items, totalPrice, shippingAddress });
         res.status(201).json({ success: true, message: "Order created successfully", data: result });
     } catch (error) {
         next(error);
@@ -28,8 +29,18 @@ const getOrderById = async (req: Request, res: Response, next: NextFunction) => 
     }
 };
 
+const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await orderService.cancelOrder(Number(req.user!.id), Number(req.params.id));
+        res.status(200).json({ success: true, message: "Order cancelled successfully", data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const OrderController = {
     createOrder,
     getCustomerOrders,
-    getOrderById
+    getOrderById,
+    cancelOrder
 };
