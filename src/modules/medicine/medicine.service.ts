@@ -6,12 +6,18 @@ const getAllMedicines = async ({
     category,
     page,
     limit,
+    manufacturer,
+    minPrice,
+    maxPrice,
     skip,
     sortBy,
     sortOrder
 }: {
-    search?: string;
-    category?: string;
+    search?: string | undefined;
+    category?: string | undefined;
+    manufacturer?: string | undefined;
+    minPrice?: number | undefined;
+    maxPrice?: number | undefined;
     page: number;
     limit: number;
     skip: number;
@@ -35,6 +41,20 @@ const getAllMedicines = async ({
                 name: { equals: category, mode: "insensitive" }
             }
         });
+    }
+
+    if (manufacturer) {
+        andConditions.push({
+            manufacturer: { contains: manufacturer, mode: "insensitive" }
+        });
+    }
+
+    if (minPrice !== undefined) {
+        andConditions.push({ price: { gte: minPrice } });
+    }
+
+    if (maxPrice !== undefined) {
+        andConditions.push({ price: { lte: maxPrice } });
     }
 
     const where: Prisma.MedicineWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
