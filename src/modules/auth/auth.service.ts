@@ -26,8 +26,14 @@ const registerUser = async (data: any) => {
         }
     });
 
+    const token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+    );
+
     const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return { user: userWithoutPassword, token };
 };
 
 const loginUser = async (data: any) => {
@@ -74,8 +80,23 @@ const getCurrentUser = async (userId: number) => {
     return userWithoutPassword;
 };
 
+const updateCurrentUser = async (userId: number, data: { name?: string; password?: string }) => {
+    const updateData: any = {};
+    if (data.name) updateData.name = data.name;
+    if (data.password) updateData.password = await bcrypt.hash(data.password, 10);
+
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: updateData
+    });
+
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+};
+
 export const authService = {
     registerUser,
     loginUser,
-    getCurrentUser
+    getCurrentUser,
+    updateCurrentUser
 };
