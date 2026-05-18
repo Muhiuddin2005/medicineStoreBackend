@@ -44,8 +44,19 @@ const getMe = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+const updateMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) throw new Error("You are not authorized!");
+        const result = await authService.updateCurrentUser(Number(req.user.id), req.body);
+        res.status(200).json({ success: true, message: "Profile updated successfully", data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const AuthController = {
     register,
     login,
-    getMe
+    getMe,
+    updateMe
 };
