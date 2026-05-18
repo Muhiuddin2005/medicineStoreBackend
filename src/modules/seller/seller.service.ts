@@ -76,9 +76,29 @@ const updateOrderStatus = async (sellerId: number, orderId: number, status: Orde
         throw new Error("Forbidden! You do not have permissions for this order.");
     }
 
+    const updateData: any = { status };
+    const now = new Date();
+    if (status === "PROCESSING") {
+        updateData.processingAt = now;
+    } else if (status === "SHIPPED") {
+        updateData.shippedAt = now;
+    } else if (status === "DELIVERED") {
+        updateData.deliveredAt = now;
+    } else if (status === "CANCELLED") {
+        updateData.cancelledAt = now;
+    }
+
     return await prisma.order.update({
         where: { id: orderId },
-        data: { status }
+        data: updateData
+    });
+};
+
+const getSellerMedicines = async (sellerId: number) => {
+    return await prisma.medicine.findMany({
+        where: { sellerId },
+        include: { category: true },
+        orderBy: { id: 'desc' }
     });
 };
 
@@ -87,5 +107,6 @@ export const sellerService = {
     updateMedicine,
     removeMedicine,
     getSellerOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    getSellerMedicines
 };
