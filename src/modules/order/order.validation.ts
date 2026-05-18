@@ -10,6 +10,7 @@ const createOrderSchema = z.object({
             })
         ).min(1, { message: "Order must contain at least one item" }),
         totalPrice: z.number({ message: "Total price is required and must be a positive number" }).positive(),
+        shippingAddress: z.string({ message: "Shipping address is required" })
     }),
 });
 
