@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "prisma generate",
     "dev": "npx tsx watch src/server.ts",
     "seed:admin": "npx tsx src/scripts/seedAdmin.ts"
   },
@@ -40,5 +41,8 @@
     "prisma": "7.2.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

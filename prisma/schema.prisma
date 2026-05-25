@@ -7,6 +7,79 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role       @default(CUSTOMER)
+  status    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  medicines Medicine[]
+  orders    Order[]
+  reviews   Review[]
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  medicines Medicine[]
+}
+
+model Medicine {
+  id           Int         @id @default(autoincrement())
+  name         String
+  description  String
+  price        Float
+  stock        Int
+  manufacturer String      @default("Unknown")
+  imageUrl     String?
+  sellerId     Int
+  categoryId   Int
+  category     Category    @relation(fields: [categoryId], references: [id])
+  seller       User        @relation(fields: [sellerId], references: [id])
+  orderItems   OrderItem[]
+  reviews      Review[]
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  customerId      Int
+  shippingAddress String      @default("Not provided")
+  status          OrderStatus @default(PLACED)
+  totalPrice      Float
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  placedAt        DateTime    @default(now())
+  processingAt    DateTime?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+  customer        User        @relation(fields: [customerId], references: [id])
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  medicineId Int
+  quantity   Int
+  price      Float
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+  order      Order    @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  comment    String?
+  customerId Int
+  medicineId Int
+  createdAt  DateTime @default(now())
+  customer   User     @relation(fields: [customerId], references: [id])
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+}
+
 enum Role {
   CUSTOMER
   SELLER
@@ -19,86 +92,4 @@ enum OrderStatus {
   CANCELLED
   SHIPPED
   DELIVERED
-}
-
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(CUSTOMER)
-  status    Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  medicines Medicine[]
-  orders    Order[] 
-  reviews   Review[]
-}
-model Category {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  medicines Medicine[]
-}
-
-model Medicine {
-  id          Int    @id @default(autoincrement())
-  name        String
-  description String
-  price       Float
-  stock       Int
-  manufacturer String @default("Unknown")
-  imageUrl    String?
-
-  sellerId Int
-  seller   User @relation(fields: [sellerId], references: [id])
-
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  orderItems OrderItem[]
-  reviews    Review[]
-}
-
-model Order {
-  id Int @id @default(autoincrement())
-
-  customerId Int
-  customer   User @relation(fields: [customerId], references: [id])
-
-  shippingAddress String @default("Not provided")
-
-  status     OrderStatus @default(PLACED)
-  totalPrice Float
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  placedAt     DateTime  @default(now())
-  processingAt DateTime?
-  shippedAt    DateTime?
-  deliveredAt  DateTime?
-  cancelledAt  DateTime?
-
-  items OrderItem[]
-}
-
-model OrderItem {
-  id         Int      @id @default(autoincrement())
-  orderId    Int
-  order      Order    @relation(fields: [orderId], references: [id])
-  medicineId Int
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
-  quantity   Int
-  price      Float
-}
-
-model Review {
-  id         Int      @id @default(autoincrement())
-  rating     Int
-  comment    String?
-  customerId Int
-  customer   User     @relation(fields: [customerId], references: [id])
-  medicineId Int
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
-  createdAt  DateTime @default(now())
 }
