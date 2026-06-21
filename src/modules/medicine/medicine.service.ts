@@ -1,4 +1,4 @@
-import { Prisma } from "../../../generated/prisma/client/index.js";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 
 const getAllMedicines = async ({
