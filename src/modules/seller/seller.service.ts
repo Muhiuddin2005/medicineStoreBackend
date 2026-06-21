@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { Prisma, OrderStatus } from "@prisma/client";
+import type { OrderStatus } from "@prisma/client";
 
 const addMedicine = async (sellerId: number, data: any) => {
     return await prisma.medicine.create({
